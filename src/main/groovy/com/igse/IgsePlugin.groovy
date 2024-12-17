@@ -20,6 +20,9 @@ class IgsePlugin implements Plugin<Project> {
     void addStubRunner(Project project) {
         project.tasks.register('stubRun', JavaExec) {
             group = IGSE_TEST
+            classpath project.sourceSets.test.runtimeClasspath
+            mainClass = project.hasProperty('StubApplication') ? project.getProperty('StubApplication') : 'StubApplication'
+            dependsOn('testClasses')
         }
     }
 
