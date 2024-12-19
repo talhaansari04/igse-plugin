@@ -1,10 +1,10 @@
 plugins {
-    id 'java'
-    id 'groovy'
     id 'groovy-gradle-plugin'
     id 'java-gradle-plugin'
     id 'maven-publish'
 }
+
+ext['springBootVersion'] = '3.2.5'
 
 group = 'com.igse.igseserv'
 version = '1.0'
@@ -16,12 +16,13 @@ java {
 
 repositories {
     mavenCentral()
-    /*   gradlePluginPortal()
-       mavenLocal()*/
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
-    implementation 'io.spring.gradle:dependency-management-plugin:1.1.6'
+    implementation 'io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE'
+    implementation "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     implementation gradleApi()
     implementation localGroovy()
     implementation 'org.apache.groovy:groovy:4.0.14'
@@ -30,27 +31,27 @@ dependencies {
 def suffix() {
     def environment = 'feature'
     def rcBranch = /^origin\/rc\/[1-9]{1}\.[0-9]{1,3}\.[0-9]{1,3}/
-    def releaseBranch =/^origin\/release\/[1-9]{1}\.[0-9]{1,3}\.x/
+    def releaseBranch = /^origin\/release\/[1-9]{1}\.[0-9]{1,3}\.x/
 
-    if (rootProject.hasProperty('branch')){
-        if (['origin/develop'].contains(rootProject.hasProperty('branch')) || rootProject.hasProperty('branch') =~ rcBranch){
+    if (rootProject.hasProperty('branch')) {
+        if (['origin/develop'].contains(rootProject.hasProperty('branch')) || rootProject.hasProperty('branch') =~ rcBranch) {
             environment = 'develop'
-        }else if (['origin/develop'].contains(rootProject.hasProperty('branch')) || rootProject.hasProperty('branch') =~ releaseBranch){
-            environment= 'release'
+        } else if (['origin/develop'].contains(rootProject.hasProperty('branch')) || rootProject.hasProperty('branch') =~ releaseBranch) {
+            environment = 'release'
         }
     }
 
-    switch (environment){
+    switch (environment) {
         case 'release':
             ""
             break;
         case 'develop':
             "-SNAPSHOT"
             break
-        default :
-            if (!rootProject.hasProperty('shortSha')){
+        default:
+            if (!rootProject.hasProperty('shortSha')) {
                 "-LOCAL"
-            }else {
+            } else {
                 "-${rootProject.getProperty('shortSha')}"
             }
     }
@@ -64,10 +65,3 @@ gradlePlugin {
         }
     }
 }
-
-//test{
-//    useJUnitPlatform()
-//}
-
-
-
